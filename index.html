@@ -1,60 +1,82 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>محرر الأكواد الخرافي</title>
-    <!-- استدعاء مكتبة المحرر من سيرفر خارجي -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>منصتي الخرافية للأكواد</title>
+    
+    <!-- استدعاء مكتبة Monaco (نفس محرك VS Code) -->
     <link rel="stylesheet" data-name="vs/editor/editor.main" href="https://cdnjs.cloudflare.com">
+    
     <style>
-        body { margin: 0; padding: 0; background: #1e1e1e; color: white; font-family: sans-serif; }
-        #container { width: 100vw; height: 80vh; border-bottom: 2px solid #444; }
-        .controls { padding: 20px; text-align: center; }
-        button { padding: 10px 25px; background: #007bff; color: white; border: none; cursor: pointer; border-radius: 5px; font-size: 16px; }
-        button:hover { background: #0056b3; }
-        #output { padding: 15px; color: #0f0; font-family: monospace; }
+        body { margin: 0; background: #121212; color: white; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; overflow: hidden; }
+        header { height: 60px; background: #1e1e1e; display: flex; align-items: center; padding: 0 20px; justify-content: space-between; border-bottom: 1px solid #333; }
+        .logo { font-size: 20px; font-weight: bold; color: #0078d4; }
+        button { background: #28a745; color: white; border: none; padding: 8px 20px; border-radius: 4px; cursor: pointer; font-weight: bold; transition: 0.3s; }
+        button:hover { background: #218838; transform: scale(1.05); }
+        #container { height: calc(100vh - 260px); width: 100%; }
+        #terminal { height: 200px; background: #000; border-top: 2px solid #333; padding: 15px; overflow-y: auto; font-family: 'Courier New', Courier, monospace; color: #00ff00; }
+        .term-title { color: #888; font-size: 12px; margin-bottom: 10px; border-bottom: 1px solid #222; }
     </style>
 </head>
 <body>
 
-    <div class="controls">
-        <h2>محرري الخاص (نسخة تجريبية)</h2>
-        <button onclick="runCode()">تشغيل الكود ▶</button>
-    </div>
+<header>
+    <div class="logo">Replit Clone v1.0</div>
+    <button onclick="runCode()">تشغيل الكود ▶</button>
+</header>
 
-    <!-- مكان كتابة الكود -->
-    <div id="container"></div>
+<!-- مكان كتابة الكود -->
+<div id="container"></div>
 
-    <!-- مكان ظهور النتيجة -->
-    <div id="output">// النتيجة ستظهر هنا...</div>
+<!-- منطقة النتائج (التيرمينال) -->
+<div id="terminal">
+    <div class="term-title">شاشة المخرجات (Console)</div>
+    <div id="output">أهلاً بك.. اكتب كود JavaScript واضغط تشغيل!</div>
+</div>
 
-    <script src="https://cdnjs.cloudflare.com"></script>
-    <script>
-        require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com' }});
+<!-- تحميل المحرك -->
+<script src="https://cdnjs.cloudflare.com"></script>
+<script>
+    require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com' }});
 
-        let editor;
-        require(['vs/editor/editor.main'], function() {
-            editor = monaco.editor.create(document.getElementById('container'), {
-                value: "console.log('أهلاً بك في موقعي الخرافي!');\n\nfunction hello() {\n  return 'تم تشغيل الكود بنجاح';\n}\n\nconsole.log(hello());",
-                language: 'javascript',
-                theme: 'vs-dark'
-            });
+    let editor;
+    require(['vs/editor/editor.main'], function() {
+        editor = monaco.editor.create(document.getElementById('container'), {
+            value: "// جرب تكتب كود هنا\nconsole.log('مرحباً بك في عالم البرمجة!');\n\nlet a = 10;\nlet b = 20;\nconsole.log('مجموع 10 + 20 يساوي: ' + (a + b));",
+            language: 'javascript',
+            theme: 'vs-dark',
+            fontSize: 16,
+            automaticLayout: true,
+            minimap: { enabled: false }
         });
+    });
 
-        function runCode() {
+    function runCode() {
+        const outputDiv = document.getElementById('output');
+        outputDiv.innerHTML = ""; // تنظيف الشاشة
+        
+        try {
+            // إعادة توجيه console.log للشاشة بدلاً من كونسول المتصفح المخفي
+            const oldLog = console.log;
+            console.log = function(...args) {
+                args.forEach(arg => {
+                    outputDiv.innerHTML += `<div>> ${JSON.stringify(arg)}</div>`;
+                });
+                oldLog.apply(console, args);
+            };
+
             const code = editor.getValue();
-            const outputDiv = document.getElementById('output');
-            outputDiv.innerHTML = "جاري التشغيل...";
-            
-            try {
-                // محاكاة تشغيل كود جافاسكريبت
-                console.log = function(message) {
-                    outputDiv.innerHTML += "<br>> " + message;
-                };
-                eval(code);
-            } catch (err) {
-                outputDiv.innerHTML = "<span style='color:red;'>خطأ: " + err + "</span>";
-            }
+            eval(code); // تنفيذ الكود
+
+            // إعادة الكونسول لأصله
+            console.log = oldLog;
+
+        } catch (err) {
+            outputDiv.innerHTML = `<div style="color: #ff5555;">خطأ في الكود: ${err.message}</div>`;
         }
-    </script>
+    }
+</script>
+
 </body>
 </html>
