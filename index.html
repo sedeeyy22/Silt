@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <title>محرر الأكواد الخرافي</title>
+    <!-- استدعاء مكتبة المحرر من سيرفر خارجي -->
+    <link rel="stylesheet" data-name="vs/editor/editor.main" href="https://cdnjs.cloudflare.com">
+    <style>
+        body { margin: 0; padding: 0; background: #1e1e1e; color: white; font-family: sans-serif; }
+        #container { width: 100vw; height: 80vh; border-bottom: 2px solid #444; }
+        .controls { padding: 20px; text-align: center; }
+        button { padding: 10px 25px; background: #007bff; color: white; border: none; cursor: pointer; border-radius: 5px; font-size: 16px; }
+        button:hover { background: #0056b3; }
+        #output { padding: 15px; color: #0f0; font-family: monospace; }
+    </style>
+</head>
+<body>
+
+    <div class="controls">
+        <h2>محرري الخاص (نسخة تجريبية)</h2>
+        <button onclick="runCode()">تشغيل الكود ▶</button>
+    </div>
+
+    <!-- مكان كتابة الكود -->
+    <div id="container"></div>
+
+    <!-- مكان ظهور النتيجة -->
+    <div id="output">// النتيجة ستظهر هنا...</div>
+
+    <script src="https://cdnjs.cloudflare.com"></script>
+    <script>
+        require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com' }});
+
+        let editor;
+        require(['vs/editor/editor.main'], function() {
+            editor = monaco.editor.create(document.getElementById('container'), {
+                value: "console.log('أهلاً بك في موقعي الخرافي!');\n\nfunction hello() {\n  return 'تم تشغيل الكود بنجاح';\n}\n\nconsole.log(hello());",
+                language: 'javascript',
+                theme: 'vs-dark'
+            });
+        });
+
+        function runCode() {
+            const code = editor.getValue();
+            const outputDiv = document.getElementById('output');
+            outputDiv.innerHTML = "جاري التشغيل...";
+            
+            try {
+                // محاكاة تشغيل كود جافاسكريبت
+                console.log = function(message) {
+                    outputDiv.innerHTML += "<br>> " + message;
+                };
+                eval(code);
+            } catch (err) {
+                outputDiv.innerHTML = "<span style='color:red;'>خطأ: " + err + "</span>";
+            }
+        }
+    </script>
+</body>
+</html>
