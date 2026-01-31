@@ -2,81 +2,108 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>منصتي الخرافية للأكواد</title>
-    
-    <!-- استدعاء مكتبة Monaco (نفس محرك VS Code) -->
-    <link rel="stylesheet" data-name="vs/editor/editor.main" href="https://cdnjs.cloudflare.com">
-    
+    <title>منصة الذكاء الاصطناعي الخرافية</title>
     <style>
-        body { margin: 0; background: #121212; color: white; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; overflow: hidden; }
-        header { height: 60px; background: #1e1e1e; display: flex; align-items: center; padding: 0 20px; justify-content: space-between; border-bottom: 1px solid #333; }
-        .logo { font-size: 20px; font-weight: bold; color: #0078d4; }
-        button { background: #28a745; color: white; border: none; padding: 8px 20px; border-radius: 4px; cursor: pointer; font-weight: bold; transition: 0.3s; }
-        button:hover { background: #218838; transform: scale(1.05); }
-        #container { height: calc(100vh - 260px); width: 100%; }
-        #terminal { height: 200px; background: #000; border-top: 2px solid #333; padding: 15px; overflow-y: auto; font-family: 'Courier New', Courier, monospace; color: #00ff00; }
-        .term-title { color: #888; font-size: 12px; margin-bottom: 10px; border-bottom: 1px solid #222; }
+        body, html { margin: 0; padding: 0; height: 100%; background: #0f0f0f; color: white; font-family: 'Segoe UI', sans-serif; overflow: hidden; }
+        
+        /* شاشة البداية */
+        #start-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; }
+        .btn-run { padding: 20px 50px; font-size: 24px; background: #0078d4; color: white; border: none; border-radius: 50px; cursor: pointer; transition: 0.3s; box-shadow: 0 0 20px rgba(0,120,212,0.5); }
+        .btn-run:hover { transform: scale(1.1); background: #005a9e; }
+
+        /* شاشة التحميل */
+        #loader-screen { display: none; flex-direction: column; align-items: center; justify-content: center; height: 100%; background: #000; }
+        .code-anim { font-family: monospace; color: #00ff00; font-size: 14px; text-align: left; width: 300px; height: 150px; overflow: hidden; opacity: 0.7; }
+
+        /* واجهة الشات */
+        #chat-screen { display: none; flex-direction: column; height: 100%; background: #1e1e1e; }
+        header { padding: 15px; background: #2d2d2d; border-bottom: 1px solid #333; text-align: center; font-weight: bold; }
+        #chat-box { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+        .msg { padding: 10px 15px; border-radius: 10px; max-width: 80%; }
+        .ai { background: #3a3a3a; align-self: flex-start; }
+        .user { background: #0078d4; align-self: flex-end; }
+        .input-area { padding: 20px; background: #2d2d2d; display: flex; gap: 10px; }
+        input { flex: 1; padding: 12px; border-radius: 5px; border: none; outline: none; }
     </style>
 </head>
 <body>
 
-<header>
-    <div class="logo">Replit Clone v1.0</div>
-    <button onclick="runCode()">تشغيل الكود ▶</button>
-</header>
+    <!-- 1. شاشة البداية -->
+    <div id="start-screen">
+        <h1 style="margin-bottom: 30px;">مرحباً بك في المستقبل</h1>
+        <button class="btn-run" onclick="startLoading()">تشغيل الموقع ▶</button>
+    </div>
 
-<!-- مكان كتابة الكود -->
-<div id="container"></div>
+    <!-- 2. شاشة التحميل -->
+    <div id="loader-screen">
+        <div class="code-anim" id="code-text"></div>
+        <h2 id="status-text">يتم الآن تحميل الأكواد...</h2>
+        <div style="width: 200px; height: 4px; background: #333; margin-top: 20px;">
+            <div id="progress" style="width: 0%; height: 100%; background: #0078d4; transition: 0.5s;"></div>
+        </div>
+    </div>
 
-<!-- منطقة النتائج (التيرمينال) -->
-<div id="terminal">
-    <div class="term-title">شاشة المخرجات (Console)</div>
-    <div id="output">أهلاً بك.. اكتب كود JavaScript واضغط تشغيل!</div>
-</div>
+    <!-- 3. واجهة الشات -->
+    <div id="chat-screen">
+        <header>مساعدك الذكي (Replit AI Mode)</header>
+        <div id="chat-box">
+            <div class="msg ai">أهلاً بك! لقد انتهيت من تحميل كل الأكواد بنجاح. كيف يمكنني مساعدتك في مشروعك اليوم؟</div>
+        </div>
+        <div class="input-area">
+            <input type="text" id="user-input" placeholder="اكتب سؤالك هنا...">
+            <button onclick="sendMsg()" style="padding: 10px 20px;">إرسال</button>
+        </div>
+    </div>
 
-<!-- تحميل المحرك -->
-<script src="https://cdnjs.cloudflare.com"></script>
-<script>
-    require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com' }});
+    <script>
+        function startLoading() {
+            document.getElementById('start-screen').style.display = 'none';
+            document.getElementById('loader-screen').style.display = 'flex';
+            
+            let prog = 0;
+            let bar = document.getElementById('progress');
+            let codeDiv = document.getElementById('code-text');
+            let status = document.getElementById('status-text');
 
-    let editor;
-    require(['vs/editor/editor.main'], function() {
-        editor = monaco.editor.create(document.getElementById('container'), {
-            value: "// جرب تكتب كود هنا\nconsole.log('مرحباً بك في عالم البرمجة!');\n\nlet a = 10;\nlet b = 20;\nconsole.log('مجموع 10 + 20 يساوي: ' + (a + b));",
-            language: 'javascript',
-            theme: 'vs-dark',
-            fontSize: 16,
-            automaticLayout: true,
-            minimap: { enabled: false }
-        });
-    });
-
-    function runCode() {
-        const outputDiv = document.getElementById('output');
-        outputDiv.innerHTML = ""; // تنظيف الشاشة
-        
-        try {
-            // إعادة توجيه console.log للشاشة بدلاً من كونسول المتصفح المخفي
-            const oldLog = console.log;
-            console.log = function(...args) {
-                args.forEach(arg => {
-                    outputDiv.innerHTML += `<div>> ${JSON.stringify(arg)}</div>`;
-                });
-                oldLog.apply(console, args);
-            };
-
-            const code = editor.getValue();
-            eval(code); // تنفيذ الكود
-
-            // إعادة الكونسول لأصله
-            console.log = oldLog;
-
-        } catch (err) {
-            outputDiv.innerHTML = `<div style="color: #ff5555;">خطأ في الكود: ${err.message}</div>`;
+            // أنيميشن الأكواد الوهمية
+            const codes = ["GET /api/v1/ai-engine...", "Connecting to secure-server...", "Injecting Neural Assets...", "Syncing Codebase...", "Ready!"];
+            let i = 0;
+            
+            let interval = setInterval(() => {
+                prog += 5;
+                bar.style.width = prog + "%";
+                if(prog % 20 == 0) {
+                    codeDiv.innerHTML += `<div>${codes[i] || 'Processing...'}</div>`;
+                    i++;
+                }
+                if(prog >= 100) {
+                    clearInterval(interval);
+                    showChat();
+                }
+            }, 150);
         }
-    }
-</script>
 
+        function showChat() {
+            document.getElementById('loader-screen').style.display = 'none';
+            document.getElementById('chat-screen').style.display = 'flex';
+        }
+
+        function sendMsg() {
+            let input = document.getElementById('user-input');
+            let box = document.getElementById('chat-box');
+            if(input.value.trim() == "") return;
+
+            box.innerHTML += `<div class="msg user">${input.value}</div>`;
+            
+            // رد وهمي من الذكاء الاصطناعي
+            setTimeout(() => {
+                box.innerHTML += `<div class="msg ai">أنا الآن في وضع التجربة، كودي "الخرافي" لم يكتمل بعد للرد على: (${input.value})</div>`;
+                box.scrollTop = box.scrollHeight;
+            }, 1000);
+
+            input.value = "";
+            box.scrollTop = box.scrollHeight;
+        }
+    </script>
 </body>
 </html>
