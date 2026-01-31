@@ -2,100 +2,60 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>منصة الذكاء الاصطناعي العالمية</title>
+    <title>REPLIT AI CORE - Pro Mode</title>
     <style>
-        body, html { margin: 0; padding: 0; height: 100%; background: #0b0b0b; color: #e0e0e0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; overflow: hidden; }
-        
-        /* 1. شاشة البداية */
+        body, html { margin: 0; padding: 0; height: 100%; background: #0b0b0b; color: #e0e0e0; font-family: 'Segoe UI', sans-serif; overflow: hidden; }
         #start-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; background: radial-gradient(circle, #1a1a1a 0%, #000 100%); }
-        .hero-title { font-size: 3rem; margin-bottom: 10px; background: linear-gradient(90deg, #0078d4, #00c6ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 900; }
-        .btn-run { padding: 18px 60px; font-size: 22px; background: #0078d4; color: white; border: none; border-radius: 12px; cursor: pointer; transition: 0.4s; box-shadow: 0 0 30px rgba(0,120,212,0.4); font-weight: bold; }
-        .btn-run:hover { transform: translateY(-5px); box-shadow: 0 10px 40px rgba(0,120,212,0.6); background: #0086ed; }
-
-        /* 2. شاشة التحميل */
+        .btn-run { padding: 18px 60px; font-size: 22px; background: #0078d4; color: white; border: none; border-radius: 12px; cursor: pointer; transition: 0.4s; font-weight: bold; }
         #loader-screen { display: none; flex-direction: column; align-items: center; justify-content: center; height: 100%; background: #000; }
-        .code-anim { font-family: 'Courier New', Courier, monospace; color: #00ff00; font-size: 14px; text-align: left; width: 400px; height: 180px; overflow: hidden; border-left: 2px solid #00ff00; padding-left: 15px; margin-bottom: 20px; }
-        .progress-container { width: 300px; height: 6px; background: #222; border-radius: 10px; overflow: hidden; }
-        #progress-bar { width: 0%; height: 100%; background: #00ff00; box-shadow: 0 0 15px #00ff00; transition: 0.2s; }
-
-        /* 3. شاشة الشات */
+        .progress-container { width: 300px; height: 6px; background: #222; border-radius: 10px; margin-top: 20px; overflow: hidden; }
+        #progress-bar { width: 0%; height: 100%; background: #00ff00; transition: 0.2s; }
         #chat-screen { display: none; flex-direction: column; height: 100%; background: #121212; }
-        header { padding: 20px; background: #1a1a1a; border-bottom: 1px solid #333; display: flex; justify-content: space-between; align-items: center; }
-        #chat-box { flex: 1; padding: 25px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; background: #121212; }
-        .msg { padding: 12px 20px; border-radius: 15px; max-width: 75%; line-height: 1.6; font-size: 16px; position: relative; animation: fadeIn 0.3s; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .ai { background: #262626; align-self: flex-start; color: #fff; border-bottom-right-radius: 2px; }
-        .user { background: #0078d4; align-self: flex-end; color: white; border-bottom-left-radius: 2px; }
+        #chat-box { flex: 1; padding: 25px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
+        .msg { padding: 12px 20px; border-radius: 15px; max-width: 75%; font-size: 16px; }
+        .ai { background: #262626; align-self: flex-start; }
+        .user { background: #0078d4; align-self: flex-end; color: white; }
         .input-area { padding: 20px; background: #1a1a1a; display: flex; gap: 12px; border-top: 1px solid #333; }
-        input { flex: 1; padding: 15px; border-radius: 10px; border: 1px solid #444; background: #222; color: white; font-size: 16px; outline: none; }
-        input:focus { border-color: #0078d4; }
-        .send-btn { background: #0078d4; color: white; border: none; padding: 0 25px; border-radius: 10px; cursor: pointer; font-weight: bold; }
+        input { flex: 1; padding: 15px; border-radius: 10px; border: none; background: #222; color: white; }
     </style>
 </head>
 <body>
 
-    <!-- الشاشة 1: البداية -->
     <div id="start-screen">
-        <div class="hero-title">REPLIT AI CORE</div>
-        <p style="color: #888; margin-bottom: 40px;">نظام البرمجة والذكاء الاصطناعي المتطور</p>
-        <button class="btn-run" onclick="startLoading()">تشغيل المحرك ▶</button>
+        <h1 style="color:#0078d4">REPLIT AI CORE</h1>
+        <button class="btn-run" onclick="startLoading()">تشغيل الموقع ▶</button>
     </div>
 
-    <!-- الشاشة 2: التحميل الدرامي -->
     <div id="loader-screen">
-        <div class="code-anim" id="code-text"></div>
-        <h3 id="status-text" style="color: #00ff00;">Initializing AI Engine...</h3>
-        <div class="progress-container">
-            <div id="progress-bar"></div>
-        </div>
+        <div style="color:#00ff00; font-family:monospace" id="code-text"></div>
+        <h3>يتم الآن تحميل الأكواد...</h3>
+        <div class="progress-container"><div id="progress-bar"></div></div>
     </div>
 
-    <!-- الشاشة 3: الشات الذكي -->
     <div id="chat-screen">
-        <header>
-            <span style="color: #0078d4; font-weight: bold;">● AI Assistant Active</span>
-            <span style="font-size: 12px; color: #666;">v4.0 Enterprise</span>
-        </header>
+        <header style="padding:15px; background:#1a1a1a; border-bottom:1px solid #333">المساعد الذكي متصل الآن</header>
         <div id="chat-box">
-            <div class="msg ai">تم تحميل كافة البروتوكولات. أنا جاهز للرد على أي سؤال أو كتابة أي كود تحتاجه. تفضل!</div>
+            <div class="msg ai">أهلاً بك! أنا الآن أعمل بذكاء حقيقي. اسألني أي شيء.</div>
         </div>
         <div class="input-area">
-            <input type="text" id="user-input" placeholder="اسأل الذكاء الاصطناعي عن أي شيء..." onkeypress="if(event.key === 'Enter') sendMsg()">
-            <button class="send-btn" onclick="sendMsg()">إرسال</button>
+            <input type="text" id="user-input" placeholder="اكتب سؤالك هنا..." onkeypress="if(event.key === 'Enter') sendMsg()">
+            <button onclick="sendMsg()" style="background:#0078d4; color:white; border:none; padding:0 20px; border-radius:10px; cursor:pointer">إرسال</button>
         </div>
     </div>
 
     <script>
-        // ضع مفتاح الـ API الخاص بك هنا ليعمل الموقع
+        // 1. ضع مفتاح الـ API الخاص بك هنا
         const GEMINI_API_KEY = "AIzaSyBH9QxuBkWPcH3ypL1mxqPS_cDpLRLA6tg"; 
 
         function startLoading() {
             document.getElementById('start-screen').style.display = 'none';
             document.getElementById('loader-screen').style.display = 'flex';
-            
             let prog = 0;
-            let bar = document.getElementById('progress-bar');
-            let codeDiv = document.getElementById('code-text');
-            const logFiles = [
-                "> Mounting /root/system...", "> Checking Neural Links...", 
-                "> Loading Gemini-1.5-Flash...", "> Establishing Secure WebSocket...", 
-                "> Syncing Database...", "> Encryption: 256-bit AES...", "> System Ready!"
-            ];
-            
-            let i = 0;
             let interval = setInterval(() => {
-                prog += 2;
-                bar.style.width = prog + "%";
-                if(prog % 14 == 0) {
-                    codeDiv.innerHTML += `<div>${logFiles[i] || '> Processing segment...'}</div>`;
-                    i++;
-                }
-                if(prog >= 100) {
-                    clearInterval(interval);
-                    setTimeout(showChat, 500);
-                }
-            }, 50);
+                prog += 5;
+                document.getElementById('progress-bar').style.width = prog + "%";
+                if(prog >= 100) { clearInterval(interval); showChat(); }
+            }, 100);
         }
 
         function showChat() {
@@ -107,35 +67,33 @@
             const input = document.getElementById('user-input');
             const box = document.getElementById('chat-box');
             const userText = input.value.trim();
+            if (!userText) return;
 
-            if (userText === "") return;
-
-            // إضافة رسالة المستخدم
+            // عرض رسالة المستخدم
             box.innerHTML += `<div class="msg user">${userText}</div>`;
             input.value = "";
             box.scrollTop = box.scrollHeight;
 
-            // رسالة "جاري التفكير"
+            // رسالة انتظار
             const aiMsgDiv = document.createElement("div");
             aiMsgDiv.className = "msg ai";
-            aiMsgDiv.innerText = "جاري الاتصال بالعقل المدبر...";
+            aiMsgDiv.innerText = "... جاري التفكير";
             box.appendChild(aiMsgDiv);
 
             try {
+                // الاتصال الحقيقي بجوجل جيمناي
                 const response = await fetch(`https://generativelanguage.googleapis.com{GEMINI_API_KEY}`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        contents: [{ parts: [{ text: userText }] }]
-                    })
+                    body: JSON.stringify({ contents: [{ parts: [{ text: userText }] }] })
                 });
 
                 const data = await response.json();
                 const aiResponse = data.candidates[0].content.parts[0].text;
                 aiMsgDiv.innerText = aiResponse;
             } catch (error) {
-                aiMsgDiv.innerText = "حدث خطأ. تأكد من وضع API Key صحيح في الكود.";
-                aiMsgDiv.style.color = "#ff5555";
+                aiMsgDiv.innerText = "خطأ: تأكد من صحة الـ API Key أو اتصالك بالإنترنت.";
+                console.error(error);
             }
             box.scrollTop = box.scrollHeight;
         }
